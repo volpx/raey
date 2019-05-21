@@ -8,10 +8,11 @@
 MCU = atmega328p
 FORMAT = ihex
 TARGET = main
-SRC = main.c
-ASRC = include/uart.c include/timer.c
+SRC = main.cpp
+ASRC = include/*.cpp
 OPT = s
-DF_CPU=16000000
+#DF_CPU=16000000
+F_CPU=16000000
 
 # Name of this Makefile (used for "make depend").
 MAKEFILE = Makefile

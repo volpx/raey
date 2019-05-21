@@ -1,5 +1,8 @@
 #include "timer.h"
-
+void delay_ms(uitn8_t ms){
+  while(ms)
+    idle();
+}
 void timer_init(void){
   // Set port pin to output to abilitate pin driving
   DDRB|=0x02;
@@ -18,5 +21,5 @@ ISR(TIMER1_COMPA_vect)
 }
 ISR(TIMER1_OVF_vect)
 {
-  PORTB^=0x20;
+  //TODO
 }
