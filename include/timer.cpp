@@ -1,5 +1,6 @@
 #include "timer.h"
-void delay_ms(uitn8_t ms){
+
+void delay_ms(uint8_t ms){
   while(ms)
     idle();
 }

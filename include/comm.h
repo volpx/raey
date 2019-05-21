@@ -6,7 +6,7 @@
 #include <stdint.h>
 //#include <avr/io.h>
 
-uint8_t commands_in_queue=0;
+extern uint8_t commands_in_queue;
 
 void get_available_commands();
 void process_command();

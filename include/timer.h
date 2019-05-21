@@ -4,6 +4,8 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 
+#include "util.h"
+
 void timer_init(void);
 
-#endif
+#endif //TIMER_H

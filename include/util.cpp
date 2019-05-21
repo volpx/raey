@@ -22,11 +22,7 @@ void pulse_laser(void){
 
 // Initialize watchdog with 8s timeout, if possible. Otherwise, make it 4s.
 void watchdog_init(void) {
-  #if ENABLED(WATCHDOG_DURATION_8S) && defined(WDTO_8S)
-    #define WDTO_NS WDTO_8S
-  #else
-    #define WDTO_NS WDTO_4S
-  #endif
+  #define WDTO_NS WDTO_8S
   #if ENABLED(WATCHDOG_RESET_MANUAL)
     // Enable the watchdog timer, but only for the interrupt.
     // Take care, as this requires the correct order of operation, with interrupts disabled.

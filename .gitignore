@@ -1,0 +1,6 @@
+main.eep
+main.elf
+main.hex
+main.o
+main.bin
+*.ign

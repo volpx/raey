@@ -1,7 +1,7 @@
 // https://github.com/crapp/uartavr/blob/master/src/uart.h
 #include "uart.h"
 
-void uart_init(void){
+void uart_init(){
   // Disable module power reduction
   PRR&=~(0x02);
   // Set 9600 boudrate given F_CPU=16000000
@@ -12,7 +12,7 @@ void uart_init(void){
   UCSR0C=0x06;
 }
 void uart_print(const uint8_t *s){
-  while (const uint8_t c = s++)
+  while (const uint8_t c = *(s++))
     uart_tx(c);
 }
 void uart_tx(const uint8_t c){
@@ -21,12 +21,12 @@ void uart_tx(const uint8_t c){
   // send data
   UDR0=c;
 }
-uint8_t uart_rx(void){
+uint8_t uart_rx(){
   while(!(UCSR0A & (1<<RXC0)));
 
   return UDR0;
 }
-void uart_rx_flush(void){
+void uart_rx_flush(){
   //TODO
 }
 ISR(USART_TX_vect){
