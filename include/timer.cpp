@@ -16,11 +16,10 @@ void timer_init(void){
   // Enable interrupts flags
   TIMSK1=0x023;
 }
-ISR(TIMER1_COMPA_vect)
-{
+
+ISR(TIMER1_COMPA_vect){
   //PORTB^=0x20;
 }
-ISR(TIMER1_OVF_vect)
-{
-  //TODO
+ISR(TIMER1_OVF_vect){
+  //TODO this is callled at the overflow
 }

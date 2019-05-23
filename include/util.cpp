@@ -1,27 +1,32 @@
 #include "util.h"
 
-void idle(void){
+void pin_init(){
+  // laser pin init
+  // Port D13 (Pin 19 in the ATmega) made output
+  DDRD |= LASER;
+}
+void idle(){
   //TODO
 }
 void pulse_laser_n(uint8_t nops){
   //turn laser on
-  PORTB|=0x10;
-  //wait some nops
+  PORTD |= LASER;
+  //wait some time
   while(--nops);
   //turn laser off
-  PORTB&=~0x10;
+  PORTD&=~LASER;
 }
-void pulse_laser(void){
+void pulse_laser(){
   //turn laser on
-  PORTB|=0x10;
+  PORTD|=LASER;
   //nowait, as-fast-as-possible
   //turn laser off
-  PORTB&=~0x10;
+  PORTD&=~LASER;
 }
 
 
 // Initialize watchdog with 8s timeout, if possible. Otherwise, make it 4s.
-void watchdog_init(void) {
+void watchdog_init(){
   #define WDTO_NS WDTO_8S
   #if ENABLED(WATCHDOG_RESET_MANUAL)
     // Enable the watchdog timer, but only for the interrupt.

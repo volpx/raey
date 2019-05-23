@@ -109,7 +109,7 @@ flash:
   sudo avrdude -p $(MCU_ID) -c usbtiny -U flash:w:$(TARGET).hex:i -F -P usb
 
 clean:
-  rm $(TARGET).hex $(TARGET).bin
+  rm -r $(TARGET).hex $(TARGET).bin || true
 #rm $(TARGET).hex $(TARGET).eef $(TARGET).cof $(TARGET).elf \
 #$(TARGET).map $(TARGET).sym $(TARGET).lss \
 #$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d)

@@ -6,8 +6,12 @@
 #include "macros.h"
 //#include <avr/io.h>
 
+#define LASER 0x20
+
+void pin_init();
 void pulse_laser_n(uint8_t nops);
 void pulse_laser();
+void toggle_laser();
 void idle();
 
 // Initialize watchdog with a 4 second interrupt time
