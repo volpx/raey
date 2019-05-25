@@ -3,7 +3,6 @@
 #include "include/timer.h"
 #include "include/util.h"
 #include "include/comm.h"
-//https://appelsiini.net/2011/simple-usart-with-avr-libc
 
 int main(void){
 
@@ -16,11 +15,12 @@ int main(void){
   uint16_t foo=0;
 
   uart_print("Ready!");
-  
+
   while(1){
-    // while (COMMAND_AVAILABLE){
-    //   //manage command
-    // }
+    while (uart_rx_available()){
+      //manage data
+      process_input();
+    }
     idle();
     wdt_reset();
   }

@@ -18,10 +18,13 @@ extern uint8_t uart_reg;
 #define NEW_COMMAND   0
 #define TX_PEN        1
 #define RX_PEN        2
+#define NEW_DATA      3
+#define RX_FULL       4
 
 //single command buffer
 extern char buf_rx[BUFSIZE];
 extern uint8_t buf_rx_head;
+extern uint8_t buf_rx_tail;
 extern char buf_tx[BUFSIZE];
 extern uint8_t buf_tx_head;
 extern uint8_t buf_tx_tail;

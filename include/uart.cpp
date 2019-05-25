@@ -15,6 +15,9 @@ inline void enable_tx(){
 inline void disable_tx(){
   uart_reg&=~TX_PEN;
 }
+inline bool uart_rx_available(){
+  return uart_reg&NEW_DATA;
+}
 void uart_init(){
   // Disable module power reduction
   PRR&=~(0x02);
@@ -35,7 +38,7 @@ void uart_print(const char *s){
   // load the tx buffer
   while (const char c=(*(s++))){
     // wait to not overwrite data
-    while ((buf_tx_head+1)==buf_tx_tail);
+    while ((buf_tx_head+1)%BUFSIZE==buf_tx_tail);
     // increment head
     buf_tx[buf_tx_head=(buf_tx_head+1)%BUFSIZE]=c;
     if (!(uart_reg&TX_PEN)){
@@ -44,7 +47,17 @@ void uart_print(const char *s){
       UDR0=buf_tx[buf_tx_tail=(buf_tx_tail+1)%BUFSIZE];
     }
   }
-
+}
+void uart_byte(const char c){
+  // wait to not overwrite data
+  while ((buf_tx_head+1)%BUFSIZE==buf_tx_tail);
+  // increment head
+  buf_tx[buf_tx_head=(buf_tx_head+1)%BUFSIZE]=c;
+  if (!(uart_reg&TX_PEN)){
+    // start first byte, will continue in the interrupt
+    enable_tx();
+    UDR0=buf_tx[buf_tx_tail=(buf_tx_tail+1)%BUFSIZE];
+  }
 }
 ISR(USART_TX_vect){
   //transmitted, ready to go on
@@ -61,16 +74,14 @@ ISR(USART_RX_vect){
   //read the data
   const char data=UDR0;
   //manage the data
-  switch(data){
-    case '\n':
-      uart_reg |= NEW_COMMAND;
-      buf_rx_head=0;
-      break;
-    default:
-      buf_rx[buf_rx_head++]=data;
+  uart_reg|=NEW_DATA;
+  if ((buf_rx_head+1)%BUFSIZE==buf_rx_tail){
+    // full buffer, raise the error flag
+    uart_reg|=RX_FULL;
   }
-  //buf_tx[buf_tx_ind++ % BUFSIZE]=data;
-  UDR0=data;
+  else{
+    buf_rx[buf_rx_head=(buf_tx_head+1)%BUFSIZE]=data;
+  }
 }
 
 // dangling functions below
