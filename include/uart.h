@@ -15,11 +15,11 @@
 
 //status
 extern uint8_t uart_reg;
-#define NEW_COMMAND   0
-#define TX_PEN        1
-#define RX_PEN        2
-#define NEW_DATA      3
-#define RX_FULL       4
+#define NEW_COMMAND   1
+#define TX_PEN        2
+#define RX_PEN        4
+#define NEW_DATA      8
+#define RX_FULL       16
 
 //single command buffer
 extern char buf_rx[BUFSIZE];
@@ -35,8 +35,15 @@ void uart_print(const char *s);
 uint8_t uart_rx();
 void uart_byte(const char c);
 void uart_read();
+
 inline bool uart_rx_available(){
   return uart_reg&NEW_DATA;
+}
+inline void enable_tx(){
+  uart_reg|=TX_PEN;
+}
+inline void disable_tx(){
+  uart_reg&=~TX_PEN;
 }
 
 #endif //UART_H

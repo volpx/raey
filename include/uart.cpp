@@ -10,13 +10,6 @@ char buf_tx[BUFSIZE];
 uint8_t buf_tx_head=0;
 uint8_t buf_tx_tail=0;
 
-inline void enable_tx(){
-  uart_reg|=TX_PEN;
-}
-inline void disable_tx(){
-  uart_reg&=~TX_PEN;
-}
-
 void uart_init(){
   // Disable module power reduction
   PRR&=~(0x02);
@@ -59,36 +52,31 @@ void uart_byte(const char c){
   }
 }
 ISR(USART_TX_vect){
-  //transmitted, ready to go on
+  // transmitted, ready to go on
   if (buf_tx_head!=buf_tx_tail){
-    //transmit next
+    // transmit next
     UDR0=buf_tx[buf_tx_tail=(buf_tx_tail+1)%BUFSIZE];
   }
   else {
-    //unset transmission pending
+    // unset transmission pending
     disable_tx();
   }
 }
 ISR(USART_RX_vect){
-  //read the data
+  // read the data
   const char data=UDR0;
-  //manage the data
+  // manage the data
   uart_reg|=NEW_DATA;
   if ((buf_rx_head+1)%BUFSIZE==buf_rx_tail){
     // full buffer, raise the error flag
     uart_reg|=RX_FULL;
-  }
-  else{
-    buf_rx[buf_rx_head=(buf_tx_head+1)%BUFSIZE]=data;
+  } else {
+    // save data in buffer
+    buf_rx[buf_rx_head=(buf_rx_head+1)%BUFSIZE]=data;
   }
 }
 
 // dangling functions below
-
-void uart_tx(const char c){
-  // REDO
-  buf_tx[buf_tx_head++]=c;
-}
 void _uart_tx(const char c){
   // Wait tx buffer flush
   while(!(UCSR0A & (1<<UDRE0)));

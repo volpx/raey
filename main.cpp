@@ -13,7 +13,7 @@ int main(void){
   uart_print("Ready!");
 
   while(1){
-    while (uart_rx_available()){
+    if (uart_rx_available()){
       //manage data
       process_input();
     }
