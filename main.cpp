@@ -10,20 +10,16 @@ int main(void){
   watchdog_init();
   pin_init();
   uart_init();
-  timer_init();
+  //timer_init();
   sei();
-  //PORTB |= 0x10;
 
-  uint32_t foo=0;
-  uart_print("Ready");
+  uint16_t foo=0;
 
+  uart_print("Ready!");
+  
   while(1){
-    while (COMMAND_AVAILABLE){
-      //manage command
-    }
-    // if (!(foo++)){
-    //   PORTB ^= LED;
-    //
+    // while (COMMAND_AVAILABLE){
+    //   //manage command
     // }
     idle();
     wdt_reset();

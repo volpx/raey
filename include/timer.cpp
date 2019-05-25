@@ -14,7 +14,8 @@ void timer_init(void){
   // Set half dutycycle
   OCR1A=0x0100;
   // Enable interrupts flags
-  TIMSK1=0x023;
+  // TODO: it causes the dog to die
+  //TIMSK1=0x023;
 }
 
 ISR(TIMER1_COMPA_vect){

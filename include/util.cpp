@@ -46,7 +46,6 @@ void watchdog_init(){
   // #else
   //   wdt_enable(WDTO_NS); // The function handles the upper bit correct.
   // #endif
-  wdt_reset();
+  // //delay(10000); // test it!
   wdt_enable(WDTO_2S);
-  //delay(10000); // test it!
 }
