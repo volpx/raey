@@ -1,8 +1,6 @@
 #ifndef COMM_H
 #define COMM_H
 
-#define BUFSIZE 10
-
 #include <stdint.h>
 //#include <avr/io.h>
 

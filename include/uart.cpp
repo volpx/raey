@@ -3,34 +3,83 @@
 
 //Variable declaration
 uint8_t uart_reg=0;
-uint8_t buf_rx[MAX_CMD_SIZE];
-uint8_t buf_rx_ind=0;
-uint8_t buf_rx[MAX_CMD_SIZE];
-uint8_t buf_tx_ind=0;
-uint8_t buf_tx_out=0;
+char buf_rx[BUFSIZE];
+uint8_t buf_rx_head=0;
+char buf_tx[BUFSIZE];
+uint8_t buf_tx_head=0;
+uint8_t buf_tx_tail=0;
 
-
+inline void enable_tx(){
+  uart_reg|=TX_PEN;
+}
+inline void disable_tx(){
+  uart_reg&=~TX_PEN;
+}
 void uart_init(){
   // Disable module power reduction
   PRR&=~(0x02);
-  // Set 9600 boudrate given F_CPU=16000000
-  UBRR0=0x89;
+  // Set 9600 baudrate given F_CPU=16000000
+  // UBRR0=F_CPU/16/BAUD-1
+  UBRR0=0x67;
   // Enable RxTx parts and the interrupts
   UCSR0B=(1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0)|(1<<TXCIE0);
   // Async mode, no parity check, 1 stop bit, 8 bit frame
   UCSR0C=0x06;
 }
-void uart_print(const uint8_t *s){
-  while (uart_reg&TX_PEN);
-  while (const uint8_t c=(*(s++)))
-    uart_tx(c);
-  //start first byte
-  UDR0=buf_tx[buf_tx_out++ % BUFSIZE];
+void uart_print(const char *s){
+  // wait last transmission to end,
+  // when multi commands buffer will be implemented
+  // it will wait only if it's the last command in buffer, unlikely
+  //while (uart_reg&TX_PEN);
+
+  // load the tx buffer
+  while (const char c=(*(s++))){
+    // wait to not overwrite data
+    while ((buf_tx_head+1)==buf_tx_tail);
+    // increment head
+    buf_tx[buf_tx_head=(buf_tx_head+1)%BUFSIZE]=c;
+    if (!(uart_reg&TX_PEN)){
+      // start first byte, will continue in the interrupt
+      enable_tx();
+      UDR0=buf_tx[buf_tx_tail=(buf_tx_tail+1)%BUFSIZE];
+    }
+  }
+
 }
-void uart_tx(const uint8_t c){
-  buf_tx[buf_tx_ind++ % BUFSIZE]=c;
+ISR(USART_TX_vect){
+  //transmitted, ready to go on
+  if (buf_tx_head!=buf_tx_tail){
+    //transmit next
+    UDR0=buf_tx[buf_tx_tail=(buf_tx_tail+1)%BUFSIZE];
+  }
+  else {
+    //unset transmission pending
+    disable_tx();
+  }
 }
-void _uart_tx(const uint8_t c){
+ISR(USART_RX_vect){
+  //read the data
+  const char data=UDR0;
+  //manage the data
+  switch(data){
+    case '\n':
+      uart_reg |= NEW_COMMAND;
+      buf_rx_head=0;
+      break;
+    default:
+      buf_rx[buf_rx_head++]=data;
+  }
+  //buf_tx[buf_tx_ind++ % BUFSIZE]=data;
+  UDR0=data;
+}
+
+// dangling functions below
+
+void uart_tx(const char c){
+  // REDO
+  buf_tx[buf_tx_head++]=c;
+}
+void _uart_tx(const char c){
   // Wait tx buffer flush
   while(!(UCSR0A & (1<<UDRE0)));
   // send data
@@ -40,30 +89,4 @@ uint8_t _uart_rx(){
   //maybe not relevant anymore
   while(!(UCSR0A & (1<<RXC0)));
   return UDR0;
-}
-ISR(USART_TX_vect){
-  //transmitted, ready to go on
-  if (buf_tx_ind!=buf_tx_out){
-    //transmit next
-    UDR0=buf_tx[buf_tx_out++ % BUFSIZE];
-  }
-  else{
-    //unset transmission pending
-    uart_reg&=~TX_PEN;
-  }
-}
-ISR(USART_RX_vect){
-  //read the data
-  const uint8_t data=UDR0;
-  //manage the data
-  switch(data){
-    case '\n':
-      uart_reg |= NEW_COMMAND;
-      buf_rx_ind=0;
-      break;
-    default:
-      buf_rx[buf_rx_ind++]=data;
-  }
-  //buf_tx[buf_tx_ind++ % BUFSIZE]=data;
-  UDR0=data;
 }

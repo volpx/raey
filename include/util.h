@@ -6,7 +6,10 @@
 #include "macros.h"
 //#include <avr/io.h>
 
+//port D
 #define LASER 0x20
+//port B
+#define LED   0x20
 
 void pin_init();
 void pulse_laser_n(uint8_t nops);
@@ -14,7 +17,7 @@ void pulse_laser();
 void toggle_laser();
 void idle();
 
-// Initialize watchdog with a 4 second interrupt time
+
 void watchdog_init();
 
 // Reset watchdog. MUST be called at least every 4 seconds after the

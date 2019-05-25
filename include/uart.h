@@ -5,8 +5,12 @@
 //#include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define MAX_CMD_SIZE 10
-#define BUFSIZE 10
+#include "util.h"
+
+// char per command
+#define BUFSIZE 16
+// total commands in buffer
+#define CMDN    10
 #define COMMAND_AVAILABLE (uart_reg & NEW_COMMAND)
 
 //status
@@ -16,17 +20,17 @@ extern uint8_t uart_reg;
 #define RX_PEN        2
 
 //single command buffer
-extern uint8_t buf_rx[MAX_CMD_SIZE];
-extern uint8_t buf_rx_ind;
-extern uint8_t buf_tx[MAX_CMD_SIZE];
-extern uint8_t buf_tx_ind;
-extern uint8_t buf_tx_out;
+extern char buf_rx[BUFSIZE];
+extern uint8_t buf_rx_head;
+extern char buf_tx[BUFSIZE];
+extern uint8_t buf_tx_head;
+extern uint8_t buf_tx_tail;
 
 
 void uart_init();
-void uart_print(const uint8_t *s);
+void uart_print(const char *s);
 uint8_t uart_rx();
-void uart_tx(uint8_t c);
+void uart_tx(char c);
 void uart_read();
 
 #endif //UART_H

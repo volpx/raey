@@ -18,6 +18,7 @@ void timer_init(void){
 }
 
 ISR(TIMER1_COMPA_vect){
+  //for pwm for example
   //PORTB^=0x20;
 }
 ISR(TIMER1_OVF_vect){
