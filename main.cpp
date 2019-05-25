@@ -1,8 +1,4 @@
-#define F_CPU 16000000
-#include "include/uart.h"
-#include "include/timer.h"
-#include "include/util.h"
-#include "include/comm.h"
+#include "raey.h"
 
 int main(void){
 
@@ -12,7 +8,7 @@ int main(void){
   //timer_init();
   sei();
 
-  uint16_t foo=0;
+  // uint16_t foo=0;
 
   uart_print("Ready!");
 

@@ -11,7 +11,7 @@ MCU_ID  = m328p
 OSC     = 16000000UL
 PROJECT = raey
 TARGET  = main
-SRCS    = main.cpp include/comm.cpp include/timer.cpp include/uart.cpp include/util.cpp
+SRCS    = main.cpp include/comm.cpp include/time.cpp include/uart.cpp include/util.cpp
 
 # ----- These configurations are quite likely not to be changed -----
 

@@ -7,5 +7,6 @@ void get_available_commands(void){
 void process_input(){
   while((buf_rx_tail+1)%BUFSIZE==buf_rx_head){
     uart_byte(buf_rx[buf_rx_tail=(buf_rx_tail+1)%BUFSIZE]);
+    // TODO: state machine!!!!!
   }
 }

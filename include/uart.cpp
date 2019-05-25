@@ -5,6 +5,7 @@
 uint8_t uart_reg=0;
 char buf_rx[BUFSIZE];
 uint8_t buf_rx_head=0;
+uint8_t buf_rx_tail=0;
 char buf_tx[BUFSIZE];
 uint8_t buf_tx_head=0;
 uint8_t buf_tx_tail=0;
@@ -15,9 +16,7 @@ inline void enable_tx(){
 inline void disable_tx(){
   uart_reg&=~TX_PEN;
 }
-inline bool uart_rx_available(){
-  return uart_reg&NEW_DATA;
-}
+
 void uart_init(){
   // Disable module power reduction
   PRR&=~(0x02);

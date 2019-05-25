@@ -1,12 +1,11 @@
 #ifndef COMM_H
 #define COMM_H
 
-#include <stdint.h>
-//#include <avr/io.h>
+#include "../raey.h"
 
 extern uint8_t commands_in_queue;
 
 void get_available_commands();
-void process_command();
+void process_input();
 
 #endif //COMM_H

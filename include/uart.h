@@ -11,7 +11,7 @@
 #define BUFSIZE 16
 // total commands in buffer
 #define CMDN    10
-#define COMMAND_AVAILABLE (uart_reg & NEW_COMMAND)
+// #define COMMAND_AVAILABLE (uart_reg & NEW_COMMAND)
 
 //status
 extern uint8_t uart_reg;
@@ -33,7 +33,10 @@ extern uint8_t buf_tx_tail;
 void uart_init();
 void uart_print(const char *s);
 uint8_t uart_rx();
-void uart_tx(char c);
+void uart_byte(const char c);
 void uart_read();
+inline bool uart_rx_available(){
+  return uart_reg&NEW_DATA;
+}
 
 #endif //UART_H

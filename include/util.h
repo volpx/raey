@@ -1,10 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <stdint.h>
+#include "../raey.h"
+
 #include <avr/wdt.h>
-#include "macros.h"
-//#include <avr/io.h>
 
 //port D
 #define LASER 0x20
