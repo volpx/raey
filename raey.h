@@ -11,5 +11,6 @@
 #include "include/time.h"
 #include "include/macros.h"
 #include "include/uart.h"
+#include "include/adc.h"
 
 #endif //RAEY_H
