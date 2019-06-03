@@ -41,7 +41,7 @@ void uart_print(const char *s){
   }
 }
 void uart_byte(const char c){
-  // wait to not overwrite data
+  // wait if full to not overwrite data
   while ((buf_tx_head+1)%BUFSIZE==buf_tx_tail);
   // increment head
   buf_tx[buf_tx_head=(buf_tx_head+1)%BUFSIZE]=c;
@@ -50,6 +50,12 @@ void uart_byte(const char c){
     enable_tx();
     UDR0=buf_tx[buf_tx_tail=(buf_tx_tail+1)%BUFSIZE];
   }
+}
+void uart_uint(const uint8_t n){
+  //Print a uint from 0 to 256
+  uart_byte('0'+n/100);
+  uart_byte('0'+((n/10)%10));
+  uart_byte('0'+(n%10));
 }
 ISR(USART_TX_vect){
   // transmitted, ready to go on

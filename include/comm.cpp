@@ -1,6 +1,7 @@
 #include "comm.h"
 
 uint8_t commands_in_queue=0;
+uint8_t state=0;
 void get_available_commands(void){
   //TODO
 }
@@ -9,7 +10,15 @@ void process_input(){
     // thereis another byte to read in tail+1
     uint8_t data=buf_rx[buf_rx_tail=(buf_rx_tail+1)%BUFSIZE];
     uart_byte(data);
+
     // TODO: state machine!!!!!
+    switch (data) {
+      case 't':
+        adc_start(UTEMP);
+        break;
+      case 'l':
+        adc_start(TEMP);
+    }
   }
   uart_reg&=~NEW_DATA;
 }

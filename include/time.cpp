@@ -1,5 +1,6 @@
 #include "time.h"
 
+uint8_t time=0;
 void delay_ms(uint8_t ms){
   while(ms)
     idle();
@@ -19,9 +20,11 @@ void timer_init(void){
 }
 
 ISR(TIMER1_COMPA_vect){
-  //for pwm for example
+  // for pwm for example:
   //PORTB^=0x20;
 }
 ISR(TIMER1_OVF_vect){
-  //TODO this is callled at the overflow
+  // incrase time variable
+  // TODO: check how much is a unity of this variable
+  time++;
 }

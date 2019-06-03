@@ -32,9 +32,10 @@ extern uint8_t buf_tx_tail;
 
 void uart_init();
 void uart_print(const char *s);
-uint8_t uart_rx();
 void uart_byte(const char c);
+uint8_t uart_rx();
 void uart_read();
+void uart_uint(const uint8_t n);
 
 inline bool uart_rx_available(){
   return uart_reg&NEW_DATA;

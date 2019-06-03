@@ -5,7 +5,11 @@ void pin_init(){
   // Port D13 (Pin 19 in the ATmega) made output
   DDRD |= LASER;
   DDRB  = LED;
+
+  // turn off the debug led
+  // can be turned on with PORTB|=LED;
   PORTB &= ~LED;
+
 }
 void idle(){
   //TODO
