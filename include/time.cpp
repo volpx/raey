@@ -6,7 +6,7 @@ void delay_ms(uint8_t ms){
     idle();
 }
 void timer_init(void){
-  // Set port pin to output to abilitate pin driving
+  // Set port pin to output to abilitate pin driving for PWM
   DDRB|=0x02;
   // Set PWM mode and the wanted pin
   TCCR1A=0xC2;
