@@ -6,6 +6,10 @@ void delay_ms(uint8_t ms){
     idle();
 }
 void timer_init(void){
+  // The timer module used in this configuration is TIMER1/16 bit PWM
+  // Disable power saving
+  //TODO:check if this was the problem of the dog dying (also decomment last row)
+  //PRR&=~(1<<PRTIM1);
   // Set port pin to output to abilitate pin driving for PWM
   DDRB|=0x02;
   // Set PWM mode and the wanted pin
@@ -15,7 +19,7 @@ void timer_init(void){
   // Set half dutycycle
   OCR1A=0x0100;
   // Enable interrupts flags
-  // TODO: it causes the dog to die
+  //TODO: it causes the dog to die
   //TIMSK1=0x023;
 }
 

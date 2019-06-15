@@ -1,11 +1,7 @@
 #ifndef UART_H
 #define UART_H
 
-#include <stdint.h>
-//#include <avr/io.h>
-#include <avr/interrupt.h>
-
-#include "util.h"
+#include "../raey.h"
 
 // char per command
 #define BUFSIZE 16

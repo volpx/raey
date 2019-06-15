@@ -12,5 +12,6 @@
 #include "include/macros.h"
 #include "include/uart.h"
 #include "include/adc.h"
+#include "include/spi.h"
 
 #endif //RAEY_H

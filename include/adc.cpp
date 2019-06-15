@@ -48,7 +48,7 @@ void adc_process(){
   if (adc_reg&ADC_DONE_FIRST){
     // Do whatever
     switch(adc_which){
-      DTEMP:
+      case DTEMP:
         if (adc_data>TMAX){
           // overtemp();
           uart_print("OverTemp!\n");
@@ -57,7 +57,7 @@ void adc_process(){
           // deovertemp();
         }
         break;
-      UTEMP:
+      case UTEMP:
         break;
     }
 
