@@ -11,6 +11,7 @@
 */
 #define TMAX  0x55
 
+
 extern uint8_t adc_reg;
 #define ADC_NEW_DATA   1
 #define ADC_CONV_PEN   2
@@ -19,11 +20,14 @@ extern uint8_t adc_reg;
 #define OVERTEMP       16
 
 extern uint8_t adc_data;
-extern uint8_t adc_which;
 
 // For adc_start
-#define DTEMP      0x00
-#define UTEMP     0x08
+enum ADCWhich:uint8_t{
+  DTEMP=0,
+  UTEMP=0x08,
+  NONE=0xFF
+};
+extern uint8_t adc_which;
 void adc_start(const uint8_t which);
 void adc_onetime(const uint8_t which);
 
@@ -33,5 +37,7 @@ void adc_init();
 inline uint8_t adc_available(){
   return adc_reg&ADC_NEW_DATA;
 }
+
+void adc_process();
 
 #endif //ADC_H

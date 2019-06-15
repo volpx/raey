@@ -14,10 +14,10 @@ void process_input(){
     // TODO: state machine!!!!!
     switch (data) {
       case 't':
-        adc_start(UTEMP);
+        adc_start(ADCWhich::UTEMP);
         break;
       case 'l':
-        adc_start(TEMP);
+        adc_start(ADCWhich::DTEMP);
     }
   }
   uart_reg&=~NEW_DATA;

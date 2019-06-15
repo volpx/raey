@@ -2,7 +2,7 @@
 
 uint8_t adc_data=0;
 uint8_t adc_reg=0;
-uint8_t adc_which=0xFF;
+uint8_t adc_which=ADCWhich::NONE;
 
 void adc_init(){
   ADMUX=(1<<ADLAR)|(1<<REFS0) | (0x0E);
@@ -13,7 +13,7 @@ void adc_init(){
 
   // start freerunning on temperature
   ADCSRA|=(1<<ADATE);
-  adc_start(DTEMP);
+  adc_start(ADCWhich::DTEMP);
 }
 void adc_onetime(const uint8_t which){
   // Stop the freerunning on temp
@@ -29,7 +29,7 @@ void adc_start(const uint8_t which){
 void adc_stop(){
   ADCSRA&=~(1<<ADSC);
   adc_reg&=~ADC_DONE_FIRST;
-  adc_which=0xFF;
+  adc_which=ADCWhich::NONE;
 }
 ISR(ADC_vect){
   adc_reg&=~ADC_CONV_PEN;
@@ -48,7 +48,7 @@ void adc_process(){
   if (adc_reg&ADC_DONE_FIRST){
     // Do whatever
     switch(adc_which){
-      case DTEMP:
+      case ADCWhich::DTEMP:
         if (adc_data>TMAX){
           // overtemp();
           uart_print("OverTemp!\n");
@@ -57,13 +57,13 @@ void adc_process(){
           // deovertemp();
         }
         break;
-      case UTEMP:
+      case ADCWhich::UTEMP:
         break;
     }
 
     // then continue freerunning on DTEMP
     ADCSRA|=(1<<ADATE);
-    adc_start(DTEMP);
+    adc_start(ADCWhich::DTEMP);
   }
   else{
     // Skip the first
