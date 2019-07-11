@@ -9,4 +9,7 @@ extern uint8_t state;
 void get_available_commands();
 void process_input();
 
+//subroutines
+void g(uint8_t);
+
 #endif //COMM_H

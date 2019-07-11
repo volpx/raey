@@ -17,7 +17,8 @@ SRCS    = main.cpp \
 	include/time.cpp \
 	include/uart.cpp \
 	include/util.cpp \
-	include/spi.cpp
+	include/spi.cpp \
+	include/vga.cpp
 
 # ----- These configurations are quite likely not to be changed -----
 
@@ -116,9 +117,6 @@ flash:
 
 clean:
 	rm -r $(TARGET).hex $(TARGET).bin || true
-#rm $(TARGET).hex $(TARGET).eef $(TARGET).cof $(TARGET).elf \
-#$(TARGET).map $(TARGET).sym $(TARGET).lss \
-#$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d)
 
 all: clean build flash
 

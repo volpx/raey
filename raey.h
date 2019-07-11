@@ -13,5 +13,6 @@
 #include "include/uart.h"
 #include "include/adc.h"
 #include "include/spi.h"
+#include "include/vga.h"
 
 #endif //RAEY_H

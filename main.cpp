@@ -7,6 +7,7 @@ int main(void){
   uart_init();
   adc_init();
   //timer_init();
+  vga_init();
   sei();
 
 

@@ -27,4 +27,4 @@ inline uint8_t spi_available(){
   return spi_point==spi_pack_size;
 }
 
-#endif //UART_H
+#endif //SPI_H
