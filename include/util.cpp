@@ -1,5 +1,7 @@
 #include "util.h"
 
+uint8_t util_reg=0;
+
 void pin_init(){
   // laser pin init
   // Port D13 (Pin 19 in the ATmega) made output

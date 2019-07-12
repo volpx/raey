@@ -10,10 +10,15 @@
 //port B
 #define LED   0x20
 
+extern uint8_t util_reg;
+enum util_reg_bits{
+  CON_PUL_EN
+};
+
 void pin_init();
 void pulse_laser_n(uint8_t nops);
 void pulse_laser();
-void toggle_laser();
+inline void toggle_laser(){PORTD^=LASER;}
 void idle();
 
 

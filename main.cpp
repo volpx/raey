@@ -24,6 +24,9 @@ int main(void){
       // manage new adcdata
       adc_process();
     }
+    if (util_reg&(1<<CON_PUL_EN)){
+      pulse_laser();
+    }
     idle();
     wdt_reset();
   }

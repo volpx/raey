@@ -51,10 +51,13 @@ void adc_process(){
       case ADCWhich::DTEMP:
         if (adc_data>TMAX){
           // overtemp();
+          adc_reg|=OVERTEMP;
           uart_print("OverTemp!\n");
         }
-        else{
+        else if (adc_reg&OVERTEMP){
+          adc_reg&= ~OVERTEMP;
           // deovertemp();
+          uart_print("OKTemp!\n");
         }
         break;
       case ADCWhich::UTEMP:

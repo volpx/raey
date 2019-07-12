@@ -26,6 +26,21 @@ void process_input(){
         case 'g':
           state='g';
           break;
+        case 'p':
+          uart_print("\n");
+          pulse_laser();
+          ind=0;
+          break;
+        case 's':
+          uart_print("\n");
+          toggle_laser();
+          ind=0;
+          break;
+        case 'q':
+          uart_print("\n");
+          util_reg^= (1<<CON_PUL_EN);
+          ind=0;
+          break;
         default:
           ind--;
       }
@@ -35,6 +50,7 @@ void process_input(){
         case 'g':
           g(data);
           break;
+
       }
       if (ind==255){
         //there has been an error in input, abort
@@ -49,8 +65,9 @@ void process_input(){
 
 void g(uint8_t data){
   if (data>'9' || data<'0'){
-    if (data==0x0A){
+    if (data==0x0D){
       // end line
+      uart_uint(tmp_var);
       vga_set_gain(tmp_var);
       tmp_var=0;
       ind=0;

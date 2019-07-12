@@ -16,7 +16,7 @@ void vga_set_gain(const uint8_t gain){
 
   // set gain
   for (uint8_t i=0 ; i<4 ; i++){
-    PORTD= (PORTD&(~(1<<VGA_DATA))) | ((gain>>(3-i))<<VGA_DATA) ;
+    PORTD= (PORTD&(~(1<<VGA_DATA))) | (((gain>>(3-i))&0x01)<<VGA_DATA) ;
     PORTD|= (1<<VGA_CLK) ;
     PORTD&= ~(1<<VGA_CLK);
   }
