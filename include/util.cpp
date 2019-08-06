@@ -5,12 +5,12 @@ uint8_t util_reg=0;
 void pin_init(){
   // laser pin init
   // Port D13 (Pin 19 in the ATmega) made output
-  DDRD |= LASER;
-  DDRB  = LED;
+  DDRD |= (1<<LASER);
 
+  DDRC |= (1<<LED);
   // turn off the debug led
-  // can be turned on with PORTB|=LED;
-  PORTB &= ~LED;
+  // can be turned on with PORTC|=LED;
+  PORTC&= ~(1<<LED);
 
 }
 void idle(){
@@ -18,15 +18,15 @@ void idle(){
 }
 void pulse_laser_n(uint8_t nops){
   //turn laser on
-  PORTD |= LASER;
+  PORTD |= (1<<LASER);
   //wait some time
   while(--nops);
   //turn laser off
-  PORTD&=~LASER;
+  PORTD&=~(1<<LASER);
 }
 void pulse_laser(){
   //turn laser on
-  PORTD|=LASER;
+  PORTD|=(1<<LASER);
   //nowait, as-fast-as-possible
   //turn laser off
   PORTD&=~LASER;

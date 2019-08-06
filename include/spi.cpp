@@ -3,19 +3,27 @@
 //Variable declaration
 uint8_t spi_pack_size=8;
 SPIWhich spi_which;
-uint8_t spi_point=0;
+volatile uint8_t spi_point=0;
 uint8_t spi_pack[SPI_MAXBUFSIZE];
 
 void spi_master_init(){
   // Disable module power reduction
   PRR&=~(1<<PRSPI);
-  // set MOSI and SSN0 as output
-  DDRB|=(1<<DDB5)|(1<<DDB3)|(1<<DDB2);
+  // set MOSI and clock as output
+  DDRB|=(1<<DDB5)|(1<<DDB3);
+  // set pullup on my cs
+  PORTB|=(1<<PB2);
   // Enable SPI as a master and set clock
-  SPCR = (1<<SPIE)|(0<<DORD)|(1<<SPE)|
-    (1<<MSTR)|(1<<SPR0)|(0<<CPOL)|(0<<CPHA)|
+  SPCR = (1<<SPIE)|(1<<SPE)|(0<<DORD)|
+    (1<<MSTR)|(0<<CPOL)|(0<<CPHA)|
     (0x02);
-  SPSR = (1<<SPI2X);
+  //SPSR = (1<<SPI2X);
+
+  // set the cs outputs
+  DDRD|=(1<<DDD7);
+  // set high the cs-s
+  PORTD|=(1<<PD7);
+
 }
 void spi_tx(const SPIWhich which){
   // Before entering here the pack must be filled with the data
@@ -27,10 +35,11 @@ void spi_tx(const SPIWhich which){
       //PORTB&=~PB2;
       break;
     case SPIWhich::TDC:
-      //TODO: define a port
-      //DDRB&=~(1<<which);
+      PORTD&=~(1<<PD7);
       break;
   }
+  // Reenable master operations
+  SPCR|=(1<<MSTR);
   // Start transmission
   spi_point=0;
   SPDR = spi_pack[spi_point];
@@ -39,7 +48,6 @@ ISR(SPI_STC_vect){
   // // check if the MSTR bit has been cleared by someone pulling SS low
   // if (!(SPCR & MSTR)){
   //   // am I a slave now?
-  //   // no because the ss is an output
   // }
   // read the data
   spi_pack[spi_point]=SPDR;
@@ -54,11 +62,10 @@ ISR(SPI_STC_vect){
     // pull up the ss
     switch(spi_which){
       case SPIWhich::VGA:
-        PORTB|=PB2;
+        //PORTB|=PB2;
         break;
       case SPIWhich::TDC:
-        //TODO: define a port
-        //DDRB|=(1<<which);
+        PORTD|=(1<<PD7);
         break;
     }
   }

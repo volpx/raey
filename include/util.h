@@ -6,9 +6,11 @@
 #include <avr/wdt.h>
 
 //port D
-#define LASER 0x20
-//port B
-#define LED   0x20
+#define LASER 5
+//pin B5 is also the SPI clock, don't use it!
+#define LED_BUILTIN   5
+//port C
+#define LED 3
 
 extern uint8_t util_reg;
 enum util_reg_bits{
@@ -18,7 +20,10 @@ enum util_reg_bits{
 void pin_init();
 void pulse_laser_n(uint8_t nops);
 void pulse_laser();
-inline void toggle_laser(){PORTD^=LASER;}
+inline void toggle_laser(){PORTD^=(1<<LASER);}
+#define LED_ON() PORTC|=(1<<LED)
+#define LED_OFF() PORTC&= ~(1<<LED)
+#define LED_TOG() PORTC^= (1<<LED)
 void idle();
 
 

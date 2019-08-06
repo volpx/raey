@@ -5,16 +5,17 @@ int main(void){
   watchdog_init();
   pin_init();
   uart_init();
-  adc_init();
+  //adc_init();
   //timer_init();
-  vga_init();
+  //vga_init();
+  spi_master_init();
   sei();
 
 
   // uint16_t foo=0;
 
-  uart_print("Ready!\n");
-
+  uart_print("\nReady!\n");
+  LED_ON();
   while(1){
     if (uart_rx_available()){
       // manage data
@@ -26,6 +27,9 @@ int main(void){
     }
     if (util_reg&(1<<CON_PUL_EN)){
       pulse_laser();
+    }
+    if (spi_available()){
+      // 
     }
     idle();
     wdt_reset();

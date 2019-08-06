@@ -41,6 +41,14 @@ void process_input(){
           util_reg^= (1<<CON_PUL_EN);
           ind=0;
           break;
+        case 'a':
+          state='a';
+          break;
+        case 'b':
+          for(uint8_t i=0;i<spi_pack_size;i++)
+            uart_byte(spi_pack[i]);
+          ind=0;
+          break;
         default:
           ind--;
       }
@@ -50,7 +58,9 @@ void process_input(){
         case 'g':
           g(data);
           break;
-
+        case 'a':
+          a(data);
+          break;
       }
       if (ind==255){
         //there has been an error in input, abort
@@ -62,7 +72,17 @@ void process_input(){
   }
   uart_reg&=~NEW_DATA;
 }
-
+void a(uint8_t data){
+  if ((ind-1)==spi_pack_size-1){
+    spi_pack[ind-1]=data;
+    uart_print("OK\n");
+    spi_tx(SPIWhich::TDC);
+    ind=0;
+    return;
+  }
+  spi_pack[ind-1]=data;
+  ind++;
+}
 void g(uint8_t data){
   if (data>'9' || data<'0'){
     if (data==0x0D){

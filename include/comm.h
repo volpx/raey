@@ -11,5 +11,6 @@ void process_input();
 
 //subroutines
 void g(uint8_t);
+void a(uint8_t);
 
 #endif //COMM_H

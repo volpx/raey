@@ -4,9 +4,9 @@
 #include "../raey.h"
 
 // char per command
-#define BUFSIZE 16
+#define BUFSIZE 32
 // total commands in buffer
-#define CMDN    10
+// #define CMDN    10
 // #define COMMAND_AVAILABLE (uart_reg & NEW_COMMAND)
 
 //status
@@ -30,7 +30,7 @@ void uart_init();
 void uart_print(const char *s);
 void uart_byte(const char c);
 uint8_t uart_rx();
-void uart_read();
+//void uart_read();
 void uart_uint(const uint8_t n);
 
 inline bool uart_rx_available(){
