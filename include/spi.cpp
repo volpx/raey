@@ -1,7 +1,7 @@
 #include "spi.h"
 
 //Variable declaration
-uint8_t spi_pack_size=8;
+uint8_t spi_pack_size=2;
 SPIWhich spi_which;
 volatile uint8_t spi_point=0;
 uint8_t spi_pack[SPI_MAXBUFSIZE];
@@ -26,6 +26,11 @@ void spi_master_init(){
 
 }
 void spi_tx(const SPIWhich which){
+  spi_tx(which,spi_pack_size);
+}
+void spi_tx(const SPIWhich which,const uint8_t size){
+  // set pack size
+  spi_pack_size=size;
   // Before entering here the pack must be filled with the data
   // Pull down the slave correct select
   spi_which=which;

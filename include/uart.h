@@ -10,7 +10,7 @@
 // #define COMMAND_AVAILABLE (uart_reg & NEW_COMMAND)
 
 //status
-extern uint8_t uart_reg;
+extern volatile uint8_t uart_reg;
 #define NEW_COMMAND   1
 #define TX_PEN        2
 #define RX_PEN        4
@@ -19,17 +19,18 @@ extern uint8_t uart_reg;
 
 //single command buffer
 extern char buf_rx[BUFSIZE];
-extern uint8_t buf_rx_head;
-extern uint8_t buf_rx_tail;
+extern volatile uint8_t buf_rx_head;
+extern volatile uint8_t buf_rx_tail;
 extern char buf_tx[BUFSIZE];
-extern uint8_t buf_tx_head;
-extern uint8_t buf_tx_tail;
+extern volatile uint8_t buf_tx_head;
+extern volatile uint8_t buf_tx_tail;
 
 
 void uart_init();
 void uart_print(const char *s);
 void uart_byte(const char c);
 uint8_t uart_rx();
+void uart_hex(const uint8_t n);
 //void uart_read();
 void uart_uint(const uint8_t n);
 

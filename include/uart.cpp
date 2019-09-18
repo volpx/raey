@@ -2,13 +2,13 @@
 #include "uart.h"
 
 //Variable declaration
-uint8_t uart_reg=0;
+volatile uint8_t uart_reg=0;
 char buf_rx[BUFSIZE];
-uint8_t buf_rx_head=0;
-uint8_t buf_rx_tail=0;
+volatile uint8_t buf_rx_head=0;
+volatile uint8_t buf_rx_tail=0;
 char buf_tx[BUFSIZE];
-uint8_t buf_tx_head=0;
-uint8_t buf_tx_tail=0;
+volatile uint8_t buf_tx_head=0;
+volatile uint8_t buf_tx_tail=0;
 
 void uart_init(){
   // Disable module power reduction
@@ -56,6 +56,20 @@ void uart_uint(const uint8_t n){
   uart_byte('0'+n/100);
   uart_byte('0'+((n/10)%10));
   uart_byte('0'+(n%10));
+}
+void uart_hex(const uint8_t d){
+  if ((d>>4) < 10){
+    uart_byte((d>>4)+'0');
+  }
+  else {
+    uart_byte((d>>4)+'A'-10);
+  }
+  if ((d&0x0F) < 10){
+    uart_byte((d&0x0F)+'0');
+  }
+  else {
+    uart_byte((d&0x0F)+'A'-10);
+  }
 }
 ISR(USART_TX_vect){
   // transmitted, ready to go on

@@ -23,9 +23,10 @@ extern volatile uint8_t spi_point;
 
 void spi_master_init();
 void spi_tx(const SPIWhich which);
+void spi_tx(const SPIWhich which,const uint8_t size);
 inline uint8_t spi_available(){
   return spi_point==spi_pack_size;
 }
-#define SPI_READ() spi_point=0
+inline void spi_reset(){ spi_point=0;}
 
 #endif //SPI_H
