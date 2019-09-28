@@ -1,32 +1,38 @@
 #ifndef SPI_H
 #define SPI_H
 
-#include "../raey.h"
+#include <avr/interrupt.h>
+#include <stdint.h>
 
 // packet size
-extern uint8_t spi_pack_size;
-#define SPI_MAXBUFSIZE 8
+#define SPI_BUFSIZE 8
+
+extern "C" void SPI_STC_vect(void) __attribute__((signal));
 
 // which select
 enum class SPIWhich{
+  NONE,
   TDC,
   VGA
 };
-extern SPIWhich spi_which;
 
-// buffer, only one
-extern uint8_t spi_pack[SPI_MAXBUFSIZE];
-// is the index of the last byte transmited as
-// well as where goes next byte received
-// it can be used to determine when the transmission has ended
-extern volatile uint8_t spi_point;
+class Spi {
+public:
+  explicit Spi();
 
-void spi_master_init();
-void spi_tx(const SPIWhich which);
-void spi_tx(const SPIWhich which,const uint8_t size);
-inline uint8_t spi_available(){
-  return spi_point==spi_pack_size;
-}
-inline void spi_reset(){ spi_point=0;}
+  void tx(const SPIWhich which);
+  void tx(const SPIWhich which, const uint8_t size);
+  bool available() const;
+  void reset();
+
+private:
+  uint8_t buf_[SPI_BUFSIZE];
+  const uint8_t max_size_;
+  volatile uint8_t point_;
+  SPIWhich which_;
+  uint8_t size_;
+  friend void SPI_STC_vect();
+
+};
 
 #endif //SPI_H

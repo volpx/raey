@@ -1,12 +1,13 @@
 #include "spi.h"
 
-//Variable declaration
-uint8_t spi_pack_size=2;
-SPIWhich spi_which;
-volatile uint8_t spi_point=0;
-uint8_t spi_pack[SPI_MAXBUFSIZE];
+Spi spi=Spi();
 
-void spi_master_init(){
+Spi::Spi():
+  max_size_(SPI_BUFSIZE)
+  {
+  size_= 0;
+  which_=SPIWhich::NONE;
+  point_=0;
   // Disable module power reduction
   PRR&=~(1<<PRSPI);
   // set MOSI and clock as output
@@ -25,16 +26,19 @@ void spi_master_init(){
   PORTD|=(1<<PD7);
 
 }
-void spi_tx(const SPIWhich which){
-  spi_tx(which,spi_pack_size);
+void Spi::tx(const SPIWhich which){
+  tx(which,SPI_BUFSIZE);
 }
-void spi_tx(const SPIWhich which,const uint8_t size){
+void Spi::tx(const SPIWhich which,const uint8_t size){
   // set pack size
-  spi_pack_size=size;
+  if (size>max_size_)
+    // exceed the maximum size
+    return;
+  size_=size;
   // Before entering here the pack must be filled with the data
   // Pull down the slave correct select
-  spi_which=which;
-  switch(spi_which){
+  which_=which;
+  switch(which_){
     case SPIWhich::VGA:
       //TODO: see if the SS pin is pulled low anyway
       //PORTB&=~PB2;
@@ -42,35 +46,47 @@ void spi_tx(const SPIWhich which,const uint8_t size){
     case SPIWhich::TDC:
       PORTD&=~(1<<PD7);
       break;
+    case SPIWhich::NONE: default:
+      return;
   }
   // Reenable master operations
   SPCR|=(1<<MSTR);
   // Start transmission
-  spi_point=0;
-  SPDR = spi_pack[spi_point];
+  point_=0;
+  SPDR = buf_[point_];
 }
+bool Spi::available() const {
+  return point_==size_;
+}
+void Spi::reset(){
+  point_=0;
+}
+
 ISR(SPI_STC_vect){
   // // check if the MSTR bit has been cleared by someone pulling SS low
   // if (!(SPCR & MSTR)){
   //   // am I a slave now?
   // }
   // read the data
-  spi_pack[spi_point]=SPDR;
+  spi.buf_[spi.point_]=SPDR;
   // manage the data
   // check if the last byte in pack has been transmitted
-  spi_point++;
-  if (spi_point<spi_pack_size){
+  ++spi.point_;
+  if (spi.point_<spi.size_){
     // continue transmission with next byte
-    SPDR=spi_pack[spi_point];
-  } else {
+    SPDR=spi.buf_[spi.point_];
+  }
+  else {
     // end of pack
     // pull up the ss
-    switch(spi_which){
+    switch(spi.which_){
       case SPIWhich::VGA:
         //PORTB|=PB2;
         break;
       case SPIWhich::TDC:
         PORTD|=(1<<PD7);
+        break;
+      default:
         break;
     }
   }

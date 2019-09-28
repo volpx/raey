@@ -1,47 +1,52 @@
 #ifndef UART_H
 #define UART_H
 
-#include "../raey.h"
+#include "circular_buffer.h"
+
+#include <avr/interrupt.h>
+#include <stdint.h>
 
 // char per command
-#define BUFSIZE 32
+#define UART_BUFSIZE 32
 // total commands in buffer
 // #define CMDN    10
 // #define COMMAND_AVAILABLE (uart_reg & NEW_COMMAND)
 
-//status
-extern volatile uint8_t uart_reg;
-#define NEW_COMMAND   1
-#define TX_PEN        2
-#define RX_PEN        4
-#define NEW_DATA      8
-#define RX_FULL       16
+//status bits
+#define UART_NEW_COMMAND   0
+#define UART_TX_PEN        1
+#define UART_RX_PEN        2
+#define UART_NEW_DATA      3
+#define UART_RX_FULL       4
 
-//single command buffer
-extern char buf_rx[BUFSIZE];
-extern volatile uint8_t buf_rx_head;
-extern volatile uint8_t buf_rx_tail;
-extern char buf_tx[BUFSIZE];
-extern volatile uint8_t buf_tx_head;
-extern volatile uint8_t buf_tx_tail;
+extern "C" void USART_TX_vect(void) __attribute__((signal));
+extern "C" void USART_RX_vect(void) __attribute__((signal));
 
+class Uart {
+public:
+  explicit Uart();
 
-void uart_init();
-void uart_print(const char *s);
-void uart_byte(const char c);
-uint8_t uart_rx();
-void uart_hex(const uint8_t n);
-//void uart_read();
-void uart_uint(const uint8_t n);
+  void tx_enable();
+  void tx_disable();
+  bool rx_available() const;
 
-inline bool uart_rx_available(){
-  return uart_reg&NEW_DATA;
-}
-inline void enable_tx(){
-  uart_reg|=TX_PEN;
-}
-inline void disable_tx(){
-  uart_reg&=~TX_PEN;
-}
+  void tx_byte(const uint8_t data);
+  void print(const char s[]);
+  void tx_hex(const uint8_t data);
+  void tx_uint(const uint32_t data);
 
+  uint8_t rx();
+private:
+  uint8_t rx_buf_raw_[UART_BUFSIZE];
+  uint8_t tx_buf_raw_[UART_BUFSIZE];
+  CircularBufferV rx_buf_;
+  CircularBufferV tx_buf_;
+  volatile uint8_t reg_;
+  friend void USART_TX_vect();
+  friend void USART_RX_vect();
+};
+
+extern Uart uart;
+
+// https://github.com/crapp/uartavr/blob/master/src/uart.h
 #endif //UART_H
