@@ -39,8 +39,8 @@ public:
 private:
   uint8_t rx_buf_raw_[UART_BUFSIZE];
   uint8_t tx_buf_raw_[UART_BUFSIZE];
-  CircularBufferV rx_buf_;
-  CircularBufferV tx_buf_;
+  CircularBuffer rx_buf_;
+  CircularBuffer tx_buf_;
   volatile uint8_t reg_;
   friend void USART_TX_vect();
   friend void USART_RX_vect();
