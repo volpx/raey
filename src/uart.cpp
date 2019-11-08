@@ -6,6 +6,10 @@ Uart::Uart():
   rx_buf_(rx_buf_raw_,UART_BUFSIZE),
   tx_buf_(tx_buf_raw_,UART_BUFSIZE)
   {
+
+}
+
+void Uart::init(){
   // Disable module power reduction
   PRR&=~(0x02);
   // Set 9600 baudrate given F_CPU=16000000
@@ -36,7 +40,7 @@ void Uart::print(const char s[]){
 
   // load the tx buffer
   while (const char c=(*(s++))){
-    // wait to not overwrite data
+    // wait to not overwrite data, comment to overwrite from bottom
     while (tx_buf_.full());
     // increment head
     tx_buf_.put(c);
@@ -51,17 +55,21 @@ void Uart::print(const char s[]){
     }
   }
 }
-void Uart::tx_uint(const uint32_t n){
+void Uart::tx_uint(uint32_t n){
   //Print a uint from 0 to 2**32
-  char s[11];
+  uint8_t first_gone=false;
   uint8_t c=0;
-  c=s[0]=0;
+  uint32_t d=1000000000;
   do{
-    tx_byte('0');
-    // TODO
-  }while(c!=0);
+    c=(n/d)%10;
+    if (first_gone || c!=0 || d==10){
+      tx_byte('0'+c);
+      first_gone=true;
+    }
+    d/=10;
+  }while(d!=0);
 }
-void Uart::tx_hex(const uint8_t d){
+void Uart::tx_hex(uint8_t d){
   if ((d>>4) < 10){
     tx_byte((d>>4)+'0');
   }
@@ -85,6 +93,15 @@ void Uart::tx_disable(){
 bool Uart::rx_available() const{
   return reg_&(1<<UART_NEW_DATA);
 }
+uint8_t Uart::rx() {
+  uint8_t data=rx_buf_.get();
+
+  if (rx_buf_.empty())
+    reg_&=~(1<<UART_NEW_DATA);
+
+  return data;
+}
+
 ISR(USART_TX_vect){
   // transmitted, ready to go on
   if (!uart.tx_buf_.empty()){

@@ -40,6 +40,7 @@ void CircularBuffer::put(const uint8_t item) volatile {
     buf_[head_] = item;
 
     if(full_) {
+        // overwrite from the bottom
         tail_ = (tail_ + 1) % max_size_;
     }
 

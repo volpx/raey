@@ -25,15 +25,18 @@ extern "C" void USART_RX_vect(void) __attribute__((signal));
 class Uart {
 public:
   explicit Uart();
+  
+  void init();
 
   void tx_enable();
   void tx_disable();
   bool rx_available() const;
+  bool rx_available_command() const;
 
   void tx_byte(const uint8_t data);
   void print(const char s[]);
-  void tx_hex(const uint8_t data);
-  void tx_uint(const uint32_t data);
+  void tx_hex(uint8_t data);
+  void tx_uint(uint32_t data);
 
   uint8_t rx();
 private:

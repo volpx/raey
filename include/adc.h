@@ -7,7 +7,7 @@
 * The adc is in free running on monitoring the temperature of the
 * photodiode/laser on pin ADC0D aka pin PC0
 *
-* TMAX=(m*tmax+q)/Vdd*256
+* TMAX=(m*Tmax+q)/Vdd*256
 */
 #define TMAX  0x55
 

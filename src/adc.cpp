@@ -52,15 +52,18 @@ void adc_process(){
         if (adc_data>TMAX){
           // overtemp();
           adc_reg|=OVERTEMP;
-          uart_print("OverTemp!\n");
+          uart.print("OverTemp!\n");
         }
         else if (adc_reg&OVERTEMP){
           adc_reg&= ~OVERTEMP;
           // deovertemp();
-          uart_print("OKTemp!\n");
+          uart.print("OKTemp!\n");
         }
         break;
       case ADCWhich::UTEMP:
+        uart.print("Temp uC:");
+        uart.tx_uint(adc_data);
+        uart.print("\n");
         break;
     }
 

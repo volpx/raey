@@ -16,7 +16,7 @@ TARGET  = main
 
 SRC_DIR  = src
 INC_DIR  = include
-BUILD_DIR=build
+BUILD_DIR= build
 
 # ----- These configurations are quite likely not to be changed -----
 
@@ -82,18 +82,10 @@ $(shell [ -d $(OBJ_DIR) ] || mkdir -p $(OBJ_DIR))
 $(shell [ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR))
 endif
 
-all: clean build flash
-	@echo "Done"
-foo:
-	@echo $(SRCS_C)
-	@echo $(SRCS_C++)
-	@echo $(SRCS_ASM)
-	@echo $(OBJECTS)
-
 $(BUILD_DIR)/$(PROJECT).elf: $(OBJECTS)
 	@echo $@
 	# Link alltogether
-	#$(GCC) $(CFLAGS) $(OBJECTS) --output $@ $(LDFLAGS)
+	# $(GCC) $(CFLAGS) $(OBJECTS) --output $@ $(LDFLAGS)
 	$(GCC) $(CFLAGS) $^ --output $@ $(LDFLAGS)
 
 # Compile the files
@@ -106,6 +98,15 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.$(EXT_C++)
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.$(EXT_ASM)
 	$(G++) $< $(ASMFLAGS) -c -o $@
 
+$(OBJ_DIR)/main.o : $(TARGET).$(EXT_C++)
+	$(G++) $< $(C++FLAGS) -c -o $@
+
+
+foo:
+	@echo $(SRCS_C)
+	@echo $(SRCS_C++)
+	@echo $(SRCS_ASM)
+	@echo $(OBJECTS)
 
 help:
 	@echo "usage:"
@@ -139,7 +140,7 @@ build: $(BUILD_DIR)/$(PROJECT).elf
 	${OBJCOPY} -j .text -j .data -O ihex $< $(BUILD_DIR)/${TARGET}.hex
 
 flash:
-	avrdude -p $(MCU_ID) -c usbtiny -U flash:w:$(TARGET).hex:i -F -P usb
+	avrdude -p $(MCU_ID) -c usbtiny -U flash:w:$(BUILD_DIR)/$(TARGET).hex:i -F -P usb
 
 clean:
 	rm -rf $(BUILD_DIR) || true
@@ -149,3 +150,9 @@ show-mcu:
 
 debug:
 	echo $(TARGET)
+
+all: 
+	$(MAKE) clean 
+	$(MAKE) build 
+	$(MAKE) flash
+	@echo "Done"

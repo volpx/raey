@@ -1,6 +1,5 @@
 #include "comm.h"
 
-uint8_t commands_in_queue=0;
 uint8_t state=0;
 uint8_t ind=0;
 uint8_t tmp_var=0;
@@ -9,44 +8,55 @@ void get_available_commands(void){
   //TODO
 }
 void process_input(){
-  while(buf_rx_tail!=buf_rx_head){
-    // thereis another byte to read in tail+1
-    uint8_t data=buf_rx[buf_rx_tail=(buf_rx_tail+1)%BUFSIZE];
-    uart_byte(data);
-
+  while(uart.rx_available()){
+    // there is another byte to read
+    uint8_t data=uart.rx();
+    uart.tx_byte(data);
+    uart.print("\n");
     if (ind==0){
       ind++;
       switch (data) {
         case 't':
-          adc_start(ADCWhich::UTEMP);
+          uart.print("Start uC temp meas\n");
+          adc_onetime(ADCWhich::UTEMP);
+          ind=0;
           break;
         case 'l':
-          adc_start(ADCWhich::DTEMP);
+          uart.print("Start pd temp meas\n");
+          adc_onetime(ADCWhich::DTEMP);
           break;
         case 'g':
+          // gain setter
           state='g';
           break;
         case 'p':
-          uart_print("\n");
-          pulse_laser();
+          uart.print("Pulse laser\n");
+          uart.print("\n");
+          laser_pulse();
           ind=0;
           break;
         case 's':
-          uart_print("\n");
-          toggle_laser();
+          uart.print("Laser toggle\n");
+          LASER_TOG();
           ind=0;
           break;
         case 'q':
-          uart_print("\n");
-          util_reg^= (1<<CON_PUL_EN);
+          uart.print("Toggle laser pulsing\n");
+          util_reg^= (1<<UTIL_PULSE_ENABLE);
           ind=0;
           break;
         case 'a':
+          // communicate to TDC
           state='a';
           break;
         case 'b':
-          for(uint8_t i=0;i<spi_pack_size;i++)
-            uart_byte(spi_pack[i]);
+          uart.print("Read spi\n");
+          {
+            int ii=0;
+            while(spi.available()){
+              uart.tx_byte(spi.buf[++ii]);
+            }
+          }
           ind=0;
           break;
         default:
@@ -64,30 +74,29 @@ void process_input(){
       }
       if (ind==255){
         //there has been an error in input, abort
-        uart_print("ERR\n");
+        uart.print("ERR\n");
         tmp_var=0;
         ind=0;
       }
     }
   }
-  uart_reg&=~NEW_DATA;
 }
 void a(uint8_t data){
-  if ((ind-1)==spi_pack_size-1){
-    spi_pack[ind-1]=data;
-    uart_print("OK\n");
-    spi_tx(SPIWhich::TDC);
+  if ((ind-1)==8-1){
+    spi.buf[ind-1]=data;
+    uart.print("OK\n");
+    spi.tx(SPIWhich::TDC,8);
     ind=0;
     return;
   }
-  spi_pack[ind-1]=data;
+  spi.buf[ind-1]=data;
   ind++;
 }
 void g(uint8_t data){
   if (data>'9' || data<'0'){
     if (data==0x0D){
       // end line
-      uart_uint(tmp_var);
+      uart.tx_uint(tmp_var);
       vga_set_gain(tmp_var);
       tmp_var=0;
       ind=0;

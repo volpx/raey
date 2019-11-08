@@ -18,7 +18,7 @@ void calibration(){
 }
 void get_measure(){
   // get last measure
-  spi_tx()
+  spi.tx(SPIWhich::TDC,1);
   // unset the new flag
   tdc_reg&=~(1<<TDC_NEW);
 }

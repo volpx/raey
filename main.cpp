@@ -3,21 +3,22 @@
 int main(void){
 
   watchdog_init();
-  pin_init();
-  uart_init();
-  //adc_init();
-  //timer_init();
-  //vga_init();
-  spi_master_init();
+  util_init();
+  uart.init();
+  adc_init();
+  time_init();
+  vga_init();
+  spi.init();
   sei();
 
 
   // uint16_t foo=0;
 
-  uart_print("\nReady!\n");
+  uart.print("\nReady!\n");
   LED_ON();
+
   while(1){
-    if (uart_rx_available()){
+    if (uart.rx_available()){
       // manage data
       process_input();
     }
@@ -25,14 +26,14 @@ int main(void){
       // manage new adcdata
       adc_process();
     }
-    if (util_reg&(1<<CON_PUL_EN)){
-      pulse_laser();
+    if (util_reg&(1<<UTIL_PULSE_ENABLE)){
+      laser_pulse();
     }
-    if (spi_available()){
-      for (uint8_t i=0;i<spi_pack_size;i++){
-        uart_byte(spi_pack[i]);
+    if (spi.available()){
+      for (uint8_t i=0;i<spi.pack_size();i++){
+        uart.tx_byte(spi.buf[i]);
       }
-      spi_reset();
+      spi.reset();
     }
     idle();
     wdt_reset();
