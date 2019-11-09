@@ -6,7 +6,8 @@ Uart::Uart():
   rx_buf_(rx_buf_raw_,UART_BUFSIZE),
   tx_buf_(tx_buf_raw_,UART_BUFSIZE)
   {
-
+    reg_=0;
+    commands_in_=0;
 }
 
 void Uart::init(){
@@ -93,13 +94,43 @@ void Uart::tx_disable(){
 bool Uart::rx_available() const{
   return reg_&(1<<UART_NEW_DATA);
 }
-uint8_t Uart::rx() {
+bool Uart::rx_available_command() const{
+  return reg_&(1<<UART_NEW_COMMAND);
+}
+uint8_t Uart::rx_byte() {
   uint8_t data=rx_buf_.get();
+  // send back
+  tx_byte(data);
 
   if (rx_buf_.empty())
     reg_&=~(1<<UART_NEW_DATA);
 
   return data;
+}
+void Uart::rx_command(char s[]){
+  uint8_t c=rx_byte();
+  uint8_t i=0;
+  while(c){
+    if (c=='\n' || c==0){
+      c=0;
+    }
+    else if (c=='\r'){
+      // skip that one little shit character
+      c=uart.rx_byte();
+    }
+    else {
+      // save it
+      s[i++]=c;
+      // get next one
+      c=rx_buf_.get();
+    }
+  }
+  // terminate
+  s[i++]=0;
+  commands_in_ = (commands_in_ ==0 ? 0 : commands_in_--);
+  if (commands_in_==0){
+    reg_&=~(1<<UART_NEW_COMMAND);
+  }
 }
 
 ISR(USART_TX_vect){
@@ -122,8 +153,12 @@ ISR(USART_RX_vect){
     // full buffer, raise the error flag
     uart.reg_|=(1<<UART_RX_FULL);
   }
-  else {
+  else if (data=='\n'){
     // save data in buffer
+    uart.rx_buf_.put(data);
+    uart.reg_|=UART_NEW_COMMAND;
+    uart.commands_in_++;
+  } else {
     uart.rx_buf_.put(data);
   }
 }

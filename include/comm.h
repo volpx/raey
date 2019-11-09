@@ -3,6 +3,8 @@
 
 #include "../raey.h"
 
+#include <string.h>
+
 extern uint8_t commands_in_queue;
 extern uint8_t state;
 

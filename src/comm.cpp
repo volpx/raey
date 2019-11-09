@@ -3,14 +3,18 @@
 uint8_t state=0;
 uint8_t ind=0;
 uint8_t tmp_var=0;
+char comms[32];
 
 void get_available_commands(void){
   //TODO
 }
 void process_input(){
-  while(uart.rx_available()){
-    // there is another byte to read
-    uint8_t data=uart.rx();
+  if(uart.rx_available_command()){
+    // there is another command to read
+    uart.rx_command(comms);
+    state=strcmp(comms,"ciao");
+
+    uint8_t data=uart.rx_byte();
     uart.tx_byte(data);
     uart.print("\n");
     if (ind==0){

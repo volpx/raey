@@ -30,21 +30,24 @@ public:
 
   void tx_enable();
   void tx_disable();
-  bool rx_available() const;
-  bool rx_available_command() const;
 
   void tx_byte(const uint8_t data);
   void print(const char s[]);
   void tx_hex(uint8_t data);
   void tx_uint(uint32_t data);
 
-  uint8_t rx();
+  bool rx_available() const;
+  bool rx_available_command() const;
+  void rx_command(char s[]);
+  uint8_t rx_byte();
+
 private:
   uint8_t rx_buf_raw_[UART_BUFSIZE];
   uint8_t tx_buf_raw_[UART_BUFSIZE];
   CircularBuffer rx_buf_;
   CircularBuffer tx_buf_;
   volatile uint8_t reg_;
+  volatile uint8_t commands_in_;
   friend void USART_TX_vect();
   friend void USART_RX_vect();
 };
