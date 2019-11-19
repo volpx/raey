@@ -47,6 +47,7 @@ void Uart::print(const char s[]){
     tx_buf_.put(c);
     if (c=='\n'){
       // Also automatically add carriage return
+      while (tx_buf_.full());
       tx_buf_.put('\r');
     }
     if (!(reg_&(1<<UART_TX_PEN))){

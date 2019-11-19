@@ -13,16 +13,20 @@ void adc_init(){
 
   // start freerunning on temperature
   ADCSRA|=(1<<ADATE);
+  adc_reg&=~ADC_ONETIME;
   adc_start(ADCWhich::DTEMP);
 }
 void adc_onetime(const uint8_t which){
   // Stop the freerunning on temp
   ADCSRA&=~(1<<ADATE);
+  adc_reg|=ADC_ONETIME;
   // Start this one time
   adc_start(which);
 }
 void adc_start(const uint8_t which){
   adc_which=which;
+  adc_reg|=ADC_CONV_PEN;
+  adc_reg&=~ADC_DONE_FIRST;
   ADMUX=(0xF0&ADMUX)|adc_which;
   ADCSRA|=(1<<ADSC);
 }
@@ -33,49 +37,47 @@ void adc_stop(){
 }
 ISR(ADC_vect){
   adc_reg&=~ADC_CONV_PEN;
-  if (adc_reg&ADC_NEW_DATA){
-    // I have not read the last data
-    adc_reg|=ADC_FULL_ERR;
+  if (!(adc_reg&ADC_DONE_FIRST)){
+    adc_start(adc_which);
+    adc_reg|=ADC_DONE_FIRST;
   }
   else{
-    adc_data=ADCH;
-    adc_reg|=ADC_NEW_DATA;
+    if (adc_reg&ADC_NEW_DATA){
+      // I have not read the last data
+      adc_reg|=ADC_FULL_ERR;
+    }
+    else{
+      adc_data=ADCH;
+      adc_reg|=ADC_NEW_DATA;
+    }
   }
 }
 void adc_process(){
   // unset new data
   adc_reg&=~ADC_NEW_DATA;
-  if (adc_reg&ADC_DONE_FIRST){
-    // Do whatever
-    switch(adc_which){
-      case ADCWhich::DTEMP:
-        if (adc_data>TMAX){
-          // overtemp();
-          adc_reg|=OVERTEMP;
-          uart.print("OverTemp!\n");
-        }
-        else if (adc_reg&OVERTEMP){
-          adc_reg&= ~OVERTEMP;
-          // deovertemp();
-          uart.print("OKTemp!\n");
-        }
-        break;
-      case ADCWhich::UTEMP:
-        uart.print("Temp uC:");
-        uart.tx_uint(adc_data);
-        uart.print("\n");
-        break;
-    }
+  // Do whatever
+  switch(adc_which){
+    case ADCWhich::DTEMP:
+      if (adc_data>TMAX){
+        overtemp();
+        adc_reg|=OVERTEMP;
+        uart.print("OverTemp!\n");
+      }
+      else if (adc_reg&OVERTEMP){
+        adc_reg&= ~OVERTEMP;
+        dovertemp();
+      }
+      break;
+    case ADCWhich::UTEMP:
+      uart.print("Temp uC:");
+      uart.tx_uint(adc_data);
+      uart.print("\n");
+      break;
+  }
+  // then continue freerunning on DTEMP
+  ADCSRA|=(1<<ADATE);
+  adc_start(ADCWhich::DTEMP);
 
-    // then continue freerunning on DTEMP
-    ADCSRA|=(1<<ADATE);
-    adc_start(ADCWhich::DTEMP);
-  }
-  else{
-    // Skip the first
-    adc_reg|=ADC_DONE_FIRST;
-    adc_start(adc_which);
-  }
 }
 
 void temp_adc(){

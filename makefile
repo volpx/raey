@@ -5,7 +5,7 @@
 # use spaces for indentation
 #.RECIPEPREFIX +=
 
-.PHONY = all clean build flash config help default
+.PHONY = all clean build flash config help default hex
 
 # Hardware
 MCU     = atmega328p # see `make show-mcu`
@@ -83,10 +83,8 @@ $(shell [ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR))
 endif
 
 $(BUILD_DIR)/$(PROJECT).elf: $(OBJECTS)
-	@echo $@
 	# Link alltogether
-	# $(GCC) $(CFLAGS) $(OBJECTS) --output $@ $(LDFLAGS)
-	$(GCC) $(CFLAGS) $^ --output $@ $(LDFLAGS)
+	$(G++) $(C++FLAGS) $^ --output $@ $(LINKERFLAG)
 
 # Compile the files
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.$(EXT_C)
@@ -98,7 +96,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.$(EXT_C++)
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.$(EXT_ASM)
 	$(G++) $< $(ASMFLAGS) -c -o $@
 
-$(OBJ_DIR)/main.o : $(TARGET).$(EXT_C++)
+$(OBJ_DIR)/$(TARGET).o : $(TARGET).$(EXT_C++)
 	$(G++) $< $(C++FLAGS) -c -o $@
 
 
@@ -139,6 +137,10 @@ config:
 build: $(BUILD_DIR)/$(PROJECT).elf
 	${OBJCOPY} -j .text -j .data -O ihex $< $(BUILD_DIR)/${TARGET}.hex
 
+hex:
+	$(MAKE) build
+	${OBJCOPY} -j .text -j .data -O ihex $(BUILD_DIR)/$(PROJECT).elf $(BUILD_DIR)/${TARGET}.hex
+
 flash:
 	avrdude -p $(MCU_ID) -c usbtiny -U flash:w:$(BUILD_DIR)/$(TARGET).hex:i -F -P usb
 
@@ -151,8 +153,8 @@ show-mcu:
 debug:
 	echo $(TARGET)
 
-all: 
-	$(MAKE) clean 
-	$(MAKE) build 
+all:
+	$(MAKE) clean
+	$(MAKE) hex
 	$(MAKE) flash
 	@echo "Done"

@@ -56,3 +56,48 @@ void watchdog_init(){
     // //delay(10000); // test it!
     wdt_enable(WDTO_2S);
 }
+
+void overtemp(){
+    // turn off the laser
+    LASER_OFF();
+    util_reg&=~(1<<UTIL_PULSE_ENABLE);
+}
+void dovertemp(){
+
+}
+
+void measure(){
+
+}
+
+
+uint8_t stringtoint(const char s[]){
+    //take number from string until end or space or letter
+    uint8_t res=0;
+    char c=1;
+    while (c){
+        c=(*(s++));
+        if (c>='0' && c<='9') {
+            res=res*10+(c-'0');
+        }
+        else {
+            c=0;
+        }
+    }
+    return res;
+}
+
+uint8_t nospace_after(const char s[],uint8_t start){
+    // return the index of the first non space after
+    // the space that comes after the index given
+
+    //find space
+    while(s[start]!=' ' && s[start]!=0){
+        start++;
+    }
+    //find nospace
+    while(s[start]==' ' && s[start]!=0){
+        start++;
+    }
+    return start;
+}

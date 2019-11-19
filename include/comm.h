@@ -2,6 +2,7 @@
 #define COMM_H
 
 #include "../raey.h"
+#include "util.h"
 
 #include <string.h>
 
@@ -10,9 +11,7 @@ extern uint8_t state;
 
 void get_available_commands();
 void process_input();
-
-//subroutines
-void g(uint8_t);
-void a(uint8_t);
+uint8_t loadarrayfromstring_hex(uint8_t a[],char s[]);
+uint8_t char_to_hex(char c);
 
 #endif //COMM_H

@@ -18,25 +18,24 @@ int main(void){
   LED_ON();
 
   while(1){
-    if (uart.rx_available()){
-      // manage data
-      process_input();
-    }
     if (adc_available()){
       // manage new adcdata
       adc_process();
     }
-    if (util_reg&(1<<UTIL_PULSE_ENABLE)){
-      laser_pulse();
-    }
-    if (spi.available()){
+    else if (spi.available()){
       for (uint8_t i=0;i<spi.pack_size();i++){
         uart.tx_byte(spi.buf[i]);
       }
       spi.reset();
     }
+    else if (uart.rx_available()){
+      // manage data
+      process_input();
+    }
+    else if (util_reg&(1<<UTIL_PULSE_ENABLE)){
+      laser_pulse();
+    }
     idle();
-    wdt_reset();
   }
   return 0;
 }

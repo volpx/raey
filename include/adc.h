@@ -17,7 +17,8 @@ extern uint8_t adc_reg;
 #define ADC_CONV_PEN   2
 #define ADC_FULL_ERR   4
 #define ADC_DONE_FIRST 8
-#define OVERTEMP       16
+#define ADC_ONETIME    16
+#define OVERTEMP       32
 
 extern uint8_t adc_data;
 
