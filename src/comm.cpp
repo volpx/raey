@@ -5,6 +5,9 @@ uint8_t ind=0;
 uint8_t tmp_var=0;
 char comms[32];
 
+uint8_t loadarrayfromstring_hex(uint8_t a[],char s[]);
+uint8_t char_to_hex(char c);
+
 void get_available_commands(void){
   //TODO
 }

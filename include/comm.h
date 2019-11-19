@@ -11,7 +11,6 @@ extern uint8_t state;
 
 void get_available_commands();
 void process_input();
-uint8_t loadarrayfromstring_hex(uint8_t a[],char s[]);
-uint8_t char_to_hex(char c);
+
 
 #endif //COMM_H
