@@ -6,6 +6,8 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 
+#include "../raey.h"
+
 // char per command
 #define UART_BUFSIZE 32
 // total commands in buffer
@@ -25,7 +27,7 @@ extern "C" void USART_RX_vect(void) __attribute__((signal));
 class Uart {
 public:
   explicit Uart();
-  
+
   void init();
 
   void tx_enable();

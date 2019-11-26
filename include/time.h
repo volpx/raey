@@ -1,6 +1,8 @@
 #ifndef TIME_H
 #define TIME_H
 
+#include <stdint.h>
+
 #include "../raey.h"
 
 // F_OVF=F_MCU/PRESCALER/TIMERCS/TOP=976.5 Hz

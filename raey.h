@@ -3,8 +3,6 @@
 
 #define F_CPU 16000000
 
-#include <stdint.h>
-#include <avr/interrupt.h>
 
 #include "include/util.h"
 #include "include/comm.h"

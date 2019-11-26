@@ -96,7 +96,7 @@ bool Uart::rx_available() const{
   return reg_&(1<<UART_NEW_DATA);
 }
 bool Uart::rx_available_command() const{
-  return reg_&(1<<UART_NEW_COMMAND);
+  return commands_in_;
 }
 uint8_t Uart::rx_byte() {
   uint8_t data=rx_buf_.get();
@@ -117,18 +117,19 @@ void Uart::rx_command(char s[]){
     }
     else if (c=='\r'){
       // skip that one little shit character
-      c=uart.rx_byte();
+      c=rx_byte();
     }
     else {
       // save it
       s[i++]=c;
       // get next one
-      c=rx_buf_.get();
+      c=rx_byte();
     }
   }
+  tx_byte('\n');
   // terminate
-  s[i++]=0;
-  commands_in_ = (commands_in_ ==0 ? 0 : commands_in_--);
+  s[++i]=0;
+  commands_in_ = (commands_in_ ==0 ? 0 : --commands_in_);
   if (commands_in_==0){
     reg_&=~(1<<UART_NEW_COMMAND);
   }

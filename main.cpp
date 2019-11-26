@@ -15,7 +15,7 @@ int main(void){
   // uint16_t foo=0;
 
   uart.print("\nReady!\n");
-  LED_ON();
+  LED_OFF();
 
   while(1){
     if (adc_available()){
@@ -28,7 +28,7 @@ int main(void){
       }
       spi.reset();
     }
-    else if (uart.rx_available()){
+    else if (uart.rx_available_command()){
       // manage data
       process_input();
     }
