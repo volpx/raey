@@ -52,7 +52,11 @@ void Spi::tx(const SPIWhich which,const uint8_t size){
     case SPIWhich::DAC:
       PORTD&=~(1<<DAC_CS);
       break;
-    case SPIWhich::NONE: default:
+    case SPIWhich::TRY:
+      LED_OFF();
+      break;
+    case SPIWhich::NONE:
+    default:
       return;
   }
   // Reenable master operations
@@ -101,6 +105,9 @@ ISR(SPI_STC_vect){
         break;
       case SPIWhich::DAC:
         PORTD|=(1<<DAC_CS);
+        break;
+      case SPIWhich::TRY:
+        LED_ON();
         break;
       default:
         break;

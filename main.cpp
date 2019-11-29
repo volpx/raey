@@ -15,18 +15,12 @@ int main(void){
   // uint16_t foo=0;
 
   uart.print("\nReady!\n");
-  LED_OFF();
+  LED_ON();
 
   while(1){
     if (adc_available()){
       // manage new adcdata
       adc_process();
-    }
-    else if (spi.available()){
-      for (uint8_t i=0;i<spi.pack_size();i++){
-        uart.tx_byte(spi.buf[i]);
-      }
-      spi.reset();
     }
     else if (uart.rx_available_command()){
       // manage data

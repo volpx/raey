@@ -4,6 +4,8 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 
+#include "../raey.h"
+
 extern void idle();
 
 // chip selects PORTD
@@ -21,7 +23,8 @@ enum class SPIWhich{
   NONE,
   TDC,
   VGA,
-  DAC
+  DAC,
+  TRY
 };
 
 class Spi {

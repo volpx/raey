@@ -98,8 +98,17 @@ void process_input(){
       uint8_t startdata=nospace_after(comms,nospace_after(comms,0));
       uint8_t size=loadarrayfromstring_hex(spi.buf,comms+startdata);
 
-      if (strncmp(comms+nospace_after(comms,0),"tdc",3)==0){
+      if      (strncmp(comms+nospace_after(comms,0),"tdc",3)==0){
         spi.tx(SPIWhich::TDC,size);
+      }
+      else if (strncmp(comms+nospace_after(comms,0),"dac",3)==0){
+        spi.tx(SPIWhich::DAC,size);
+      }
+      else if (strncmp(comms+nospace_after(comms,0),"vga",3)==0){
+        spi.tx(SPIWhich::VGA,size);
+      }
+      else if (strncmp(comms+nospace_after(comms,0),"try",3)==0){
+        spi.tx(SPIWhich::TRY,size);
       }
       else{
         uart.print("Don't know where to write\n");
@@ -122,7 +131,8 @@ uint8_t loadarrayfromstring_hex(uint8_t a[],char s[]){
 
   uint8_t i=0;
   uint8_t tmp=0;
-  while (uint8_t v=char_to_hex(*(s+i))) {
+  uint8_t v=0;
+  while ((v=char_to_hex(*(s+i)))!=0xff) {
     if (i%2==0){
       tmp=v;
     }
@@ -141,6 +151,6 @@ uint8_t char_to_hex(const char c){
     return c-'a'+10;
   else if (c>='A' && c<='F')
     return c-'A'+10;
-  else //if (c==0)
-    return 0;
+  else //if (c==0 or not hexable)
+    return 0xff;
 }
