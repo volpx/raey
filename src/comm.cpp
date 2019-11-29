@@ -95,6 +95,9 @@ void process_input(){
     }
 
     else if (strncmp(comms,"writespi",8)==0){
+      spi.wait_available();
+      spi.reset();
+
       uint8_t startdata=nospace_after(comms,nospace_after(comms,0));
       uint8_t size=loadarrayfromstring_hex(spi.buf,comms+startdata);
 

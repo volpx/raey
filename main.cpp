@@ -7,9 +7,10 @@ int main(void){
   uart.init();
   adc_init();
   time_init();
-  vga_init();
   spi.init();
   sei();
+
+  vga_init();
 
 
   // uint16_t foo=0;

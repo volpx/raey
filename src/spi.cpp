@@ -74,6 +74,7 @@ void Spi::wait_available() const {
 }
 void Spi::reset(){
   point_=0;
+  size_=0;
 }
 uint8_t Spi::pack_size() const {
   return size_;

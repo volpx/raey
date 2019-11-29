@@ -126,7 +126,6 @@ void Uart::rx_command(char s[]){
       c=rx_byte();
     }
   }
-  tx_byte('\n');
   // terminate
   s[++i]=0;
   commands_in_ = (commands_in_ ==0 ? 0 : --commands_in_);
