@@ -12,5 +12,6 @@
 #include "include/adc.h"
 #include "include/spi.h"
 #include "include/vga.h"
+#include "include/tdc.h"
 
 #endif //RAEY_H
