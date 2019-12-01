@@ -19,21 +19,25 @@ void Spi::init(){
   // set pullup on my cs
   PORTB|=(1<<PB2);
   // Enable SPI as a master and set clock
-  SPCR = (1<<SPIE)|(1<<SPE)|(0<<DORD)|
-    (1<<MSTR)|(0<<CPOL)|(0<<CPHA)|
-    (0x02);
+  SPCR = (1<<SPIE)|(1<<SPE)|(0<<DORD)
+      |(0<<CPOL)|(0<<CPHA)|
+      (0x02);
   //SPSR = (1<<SPI2X);
 
   // set the cs outputs
   DDRD|=(1<<TDC_CS)|(1<<VGA_CS)|(1<<DAC_CS);
   // set high the cs s
   PORTD|=(1<<TDC_CS)|(1<<VGA_CS)|(1<<DAC_CS);
+
+  // Wait the end of programming, my CS must be high
+  while(!(PINB&(1<<PB2)));
 }
 
 void Spi::tx(const SPIWhich which){
   tx(which,SPI_BUFSIZE);
 }
 void Spi::tx(const SPIWhich which,const uint8_t size){
+  wait_available();
   // set pack size
   if (size>max_size_)
     // exceed the maximum size
@@ -81,37 +85,40 @@ uint8_t Spi::pack_size() const {
 }
 
 ISR(SPI_STC_vect){
-  // // check if the MSTR bit has been cleared by someone pulling SS low
-  // if (!(SPCR & MSTR)){
-  //   // am I a slave now?
-  // }
-  // read the data
-  spi.buf[spi.point_]=SPDR;
-  // manage the data
-  // check if the last byte in pack has been transmitted
-  ++spi.point_;
-  if (spi.point_<spi.size_){
-    // continue transmission with next byte
-    SPDR=spi.buf[spi.point_];
+  // check if the MSTR bit has been cleared by someone pulling SS low
+  if (SPCR & (1<<MSTR)){
+    // Master operations
+    // read the data
+    spi.buf[spi.point_]=SPDR;
+    // manage the data
+    // check if the last byte in pack has been transmitted
+    ++spi.point_;
+    if (spi.point_<spi.size_){
+      // continue transmission with next byte
+      SPDR=spi.buf[spi.point_];
+    }
+    else {
+      // end of pack
+      // pull up the ss
+      switch(spi.which_){
+        case SPIWhich::VGA:
+          PORTD|=(1<<VGA_CS);
+          break;
+        case SPIWhich::TDC:
+          PORTD|=(1<<TDC_CS);
+          break;
+        case SPIWhich::DAC:
+          PORTD|=(1<<DAC_CS);
+          break;
+        case SPIWhich::TRY:
+          LED_ON();
+          break;
+        default:
+          break;
+      }
+    }
   }
   else {
-    // end of pack
-    // pull up the ss
-    switch(spi.which_){
-      case SPIWhich::VGA:
-        PORTD|=(1<<VGA_CS);
-        break;
-      case SPIWhich::TDC:
-        PORTD|=(1<<TDC_CS);
-        break;
-      case SPIWhich::DAC:
-        PORTD|=(1<<DAC_CS);
-        break;
-      case SPIWhich::TRY:
-        LED_ON();
-        break;
-      default:
-        break;
-    }
+    // Slave operations
   }
 }

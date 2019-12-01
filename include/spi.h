@@ -14,7 +14,7 @@ extern void idle();
 #define DAC_CS      4
 
 // packet size
-#define SPI_BUFSIZE 8
+#define SPI_BUFSIZE 16
 
 extern "C" void SPI_STC_vect(void) __attribute__((signal));
 
