@@ -57,7 +57,7 @@ void Uart::print(const char s[]){
     }
   }
 }
-void Uart::tx_uint(uint32_t n){
+void Uart::tx_uint(const uint32_t n){
   //Print a uint from 0 to 2**32
   uint8_t first_gone=false;
   uint8_t c=0;
@@ -71,7 +71,20 @@ void Uart::tx_uint(uint32_t n){
     d/=10;
   }while(d!=0);
 }
-void Uart::tx_hex(uint8_t d){
+void Uart::tx_float(const float f,const uint8_t dig){
+  //Print a float with dig digits after point
+  //print integer part
+  uart.tx_uint((uint32_t)f);
+  if (dig!=0){
+    uart.tx_byte('.');
+    float dec=f-(uint32_t)f;
+    for(uint8_t i =0; i<dig;++i){
+      dec*=10;
+      uart.tx_byte('0'+((uint8_t)dec%10));
+    }
+  }
+}
+void Uart::tx_hex(const uint8_t d){
   if ((d>>4) < 10){
     tx_byte((d>>4)+'0');
   }
