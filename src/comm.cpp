@@ -61,6 +61,18 @@ void process_input(){
       }
     }
 
+    else if (strncmp(comms,"led",3)==0){
+      if (strncmp(comms+nospace_after(comms,0),"on",2)==0){
+        LED_ON();
+      }
+      else if(strncmp(comms+nospace_after(comms,0),"tog",3)==0){
+        LED_TOG();
+      }
+      else{
+        LED_OFF();
+      }
+    }
+
     else if (strncmp(comms,"gain",4)==0){
       uint8_t g = stringtoint(comms+nospace_after(comms,0));
       vga_set_gain(g);
@@ -80,7 +92,12 @@ void process_input(){
 
     else if (strncmp(comms,"measure",7)==0){
       uart.print("Maybesure\n");
-      // measure(comms+nospace_after(comms,0));
+      tdc_prepare_measure();
+      laser_pulse();
+      tdc_wait_finished();
+      float tof=tdc_get_measure();
+      uart.print("tof_ns=");
+      uart.tx_float(tof*1e9,1);
     }
 
     else if (strncmp(comms,"readspi",7)==0){
@@ -119,7 +136,11 @@ void process_input(){
     }
 
     else if (strncmp(comms,"debug",5)==0){
-      uart.tx_hex('c');
+      // Insert here code to debug
+    }
+
+    else if (strlen(comms)==0){
+      // Nothing
     }
 
     else {

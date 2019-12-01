@@ -11,9 +11,7 @@ int main(void){
   sei();
 
   vga_init();
-
-
-  // uint16_t foo=0;
+  tdc_init();
 
   uart.print("\nReady!\n");
   LED_ON();
@@ -31,6 +29,7 @@ int main(void){
       laser_pulse();
     }
     idle();
+    watchdog_reset();
   }
   return 0;
 }
