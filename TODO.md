@@ -6,7 +6,3 @@
 - save 10u and 100n cap on usb port | done
 
 ## TODO list for raey
-- Implement SPI | WIP
-- PWM stucks something, check timer | try the solution
-- lay down where a design of pin purpose and connections
-- refactor the code for using namespaces and eliminate a lot of the #define that conflicts
