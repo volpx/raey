@@ -1,17 +1,20 @@
 #include "time.h"
 
-//uint16_t time_ovf_count=0;
-uint32_t ms=0; // over 1000 hours before overflow
-void delay_ms(uint32_t dms){
-  dms+=ms;
-  while(dms!=ms)
+volatile uint32_t ms=0; // over 1000 hours before overflow
+volatile uint16_t dms=0;
+void delay_ms(const uint16_t delay){
+  dms=delay+1;
+  while(dms)
     idle();
 }
 void time_base(){
-  
+
 }
 void time_init(){
   // Timer TIMER0
+  // This timer is setted that it counts from 0 to 0xFF
+  // and then generate the interrupt.
+  // prescaler /64 ==>> 16MHz/64/256~=1kHz
   // Disable power saving
   PRR&=~(1<<PRTIM0);
   // Enable overflow interrupt
@@ -37,7 +40,7 @@ void time_init(){
   //TIMSK1=0x023;
   */
 
-  //  Set prescalers
+  // Sync timers after prescaler selection
   // Sync mode on
   GTCCR|=(1<<TSM);
   // Reset prescalers
@@ -50,7 +53,6 @@ ISR(TIMER1_COMPA_vect){
   //PORTB^=0x20;
 }
 ISR(TIMER0_OVF_vect){
-  // incrase time variable
-  //time_ovf_count++;
-  ms++;
+  ++ms;
+  dms=(dms)?dms-1:0;
 }
