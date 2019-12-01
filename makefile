@@ -142,7 +142,7 @@ hex:
 	${OBJCOPY} -j .text -j .data -O ihex $(BUILD_DIR)/$(PROJECT).elf $(BUILD_DIR)/${TARGET}.hex
 
 flash:
-	avrdude -p $(MCU_ID) -c usbtiny -F -P usb -U flash:w:$(BUILD_DIR)/$(TARGET).hex:i
+	avrdude -B 1 -p $(MCU_ID) -c usbtiny -F -P usb -U flash:w:$(BUILD_DIR)/$(TARGET).hex:i
 
 clean:
 	rm -rf $(BUILD_DIR) || true
