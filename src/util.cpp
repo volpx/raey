@@ -30,7 +30,7 @@ void laser_pulse(){
 }
 
 void idle(){
-    watchdog_reset();
+    // watchdog_reset();
     time_base();
 }
 
@@ -62,6 +62,7 @@ void overtemp(){
     LASER_OFF();
     util_reg&=~(1<<UTIL_PULSE_ENABLE);
 }
+
 void dovertemp(){
 
 }
@@ -69,7 +70,6 @@ void dovertemp(){
 void measure(){
 
 }
-
 
 uint8_t stringtoint(const char s[]){
     //take number from string until end or space or letter
@@ -93,11 +93,11 @@ uint8_t nospace_after(const char s[],uint8_t start){
 
     //find space
     while(s[start]!=' ' && s[start]!=0){
-        start++;
+        ++start;
     }
     //find nospace
     while(s[start]==' ' && s[start]!=0){
-        start++;
+        ++start;
     }
     return start;
 }
