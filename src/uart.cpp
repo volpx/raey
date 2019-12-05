@@ -57,6 +57,11 @@ void Uart::print(const char s[]){
     }
   }
 }
+void Uart::println(const char s[]){
+  print(s);
+  tx_byte('\n');
+}
+
 void Uart::tx_uint(const uint32_t n){
   //Print a uint from 0 to 2**32
   uint8_t first_gone=false;

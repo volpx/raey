@@ -35,6 +35,7 @@ public:
 
   void tx_byte(const uint8_t data);
   void print(const char s[]);
+  void println(const char s[]);
   void tx_hex(const uint8_t data);
   void tx_uint(const uint32_t data);
   void tx_float(const float f,const uint8_t dig=0);
