@@ -44,7 +44,7 @@ void process_input(){
           else{
             laser_pulse_n(d);
           }
-          n--;
+          --n;
         }
       }
     }
@@ -91,13 +91,35 @@ void process_input(){
     }
 
     else if (strncmp(comms,"measure",7)==0){
-      uart.print("Maybesure\n");
       tdc_prepare_measure();
       laser_pulse();
       tdc_wait_finished();
       float tof=tdc_get_measure();
       uart.print("tof_ns=");
       uart.tx_float(tof*1e9,1);
+    }
+
+    else if (strncmp(comms,"measloop",8)==0){
+      float tof=0;
+      uint16_t trys=0;
+      do{
+        ++trys;
+        tdc_prepare_measure();
+        laser_pulse();
+        tdc_wait_finished();
+        tof=tdc_get_measure();
+        if (trys%1000){
+          uart.tx_byte('\n');
+          uart.tx_uint(trys);
+          uart.tx_byte('\n');
+          uart.tx_float(tof*1e9,1);
+        }
+        watchdog_reset();
+      }while(tof<1e-9);
+      uart.println("\ntof_ns:");
+      uart.tx_float(tof*1e9,1);
+      uart.println("\ntrys:");
+      uart.tx_uint(trys);
     }
 
     else if (strncmp(comms,"readspi",7)==0){

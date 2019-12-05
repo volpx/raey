@@ -56,6 +56,8 @@ void tdc_prepare_measure(){
   tdc_reg|=(1<<TDC_BUSY);
   tdc_reg&=~(1<<TDC_NEW);
 
+  tdc_clear_int_status();
+
   // start measure
   spi.wait_available();
   spi.buf[0]=TDC7200_CONFIG1_REG|TDC7200_WRITE_BIT;
@@ -63,7 +65,6 @@ void tdc_prepare_measure(){
       |TDC7200_STOP_EDGE_POLARITY
       |TDC7200_FORCE_CALIBRATION;
   spi.tx(SPIWhich::TDC,2);
-  spi.wait_available();
 }
 
 void tdc_wait_finished(){
