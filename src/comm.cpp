@@ -74,8 +74,18 @@ void process_input(){
     }
 
     else if (strncmp(comms,"gain",4)==0){
-      uint8_t g = stringtoint(comms+nospace_after(comms,0));
+      const uint8_t g = stringtoint(comms+nospace_after(comms,0));
       vga_set_gain(g);
+    }
+
+    else if (strncmp(comms,"thre",4)==0){
+      const uint8_t g = stringtoint(comms+nospace_after(comms,0));
+      dac_setout(DAC_THR,g);
+    }
+
+    else if (strncmp(comms,"overdrive",9)==0){
+      const uint8_t g = stringtoint(comms+nospace_after(comms,0));
+      dac_setout(DAC_OVD,g);
     }
 
     else if (strncmp(comms,"temp",4)==0){
