@@ -17,7 +17,9 @@ void laser_pulse_n(uint8_t nops){
     //turn laser on
     LASER_ON();
     //wait some time
-    while(--nops);
+    while(--nops){
+        __asm__("nop\n");
+    }
     //turn laser off
     LASER_OFF();
 }
