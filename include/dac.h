@@ -8,7 +8,6 @@
 #define DAC_OVD 2
 
 void dac_setout(const uint8_t which, const uint8_t value);
-
-
+void dac_off(const uint8_t which);
 
 #endif //DAC_H
